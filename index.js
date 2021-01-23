@@ -25,7 +25,6 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     io.emit('session out', 'ユーザーが離脱しました');
-    console.log('!!!!!!!!!!!!!!!!!!!');
   });
 });
 
