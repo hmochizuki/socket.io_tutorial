@@ -1,0 +1,22 @@
+{
+  "name": "socket.ios_tutorial",
+  "version": "1.0.0",
+  "description": "sample app of socket.io",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hmochizuki/socket.ios_tutorial.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hmochizuki/socket.ios_tutorial/issues"
+  },
+  "homepage": "https://github.com/hmochizuki/socket.ios_tutorial#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
