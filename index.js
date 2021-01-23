@@ -1,9 +1,19 @@
-const app = require('express')();
+const express = require('express');
+
+const app = express();
+
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const fs = require('fs');
+
+app.use(express.static(`${__dirname}/public`));
 
 app.get('/', (req, res) => {
-  res.sendFile(`${__dirname}/index.html`);
+  const content = fs.readFileSync(`${__dirname}/public/index.html`, 'utf8');
+
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Content-Length', Buffer.byteLength(content));
+  res.send(content);
 });
 
 io.on('connection', (socket) => {
