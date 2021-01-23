@@ -38,6 +38,9 @@
         item.className = "info__item";
         item.textContent = msg;
         info.appendChild(item);
+        setTimeout(() => {
+          info.removeChild(item)
+        }, 5000)
       }
 
       socket.on('session in', showInfo);
