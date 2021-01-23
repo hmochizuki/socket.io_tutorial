@@ -5,6 +5,12 @@
     <title>Socket.IO chat</title>
   </head>
   <body>
+    <header id="header">
+      <p class="nickname-title">nickname: </p>
+      <form id="nickname-form" class="nickname-form">
+        <input id="nickname-form__input" class="nickname-form__input" autocomplete="off" placeholder="anonymous" maxlength="15" minlength="1"/><button class="nickname-form__button">Send</button>
+      </form>
+    </header>
     <ul id="info" class="info"></ul>
     <ul id="messages" class="messages"></ul>
     <form id="message-form" class="message-form" action="">
@@ -14,20 +20,29 @@
     <script>
       var socket = io();
       var messageForm = document.getElementById('message-form');
-      var input = document.getElementById('message-form__input');
+      var messageInput = document.getElementById('message-form__input');
+      var nicknameForm = document.getElementById('nickname-form');
+      var nicknameInput = document.getElementById('nickname-form__input');
       var info = document.getElementById('info');
 
       messageForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        if (input.value) {
-          socket.emit('chat message', input.value);
-          input.value = '';
+        if (messageInput.value) {
+          socket.emit('chat message', {msg: messageInput.value, nickname: nicknameInput.value});
+          messageInput.value = '';
         }
       });
 
-      socket.on('chat message', function(msg) {
+      nicknameForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if(nicknameInput.value) {
+          socket.emit('nickname', nicknameInput.value);
+        }
+      })
+
+      socket.on('chat message', function({msg, nickname}) {
         var item = document.createElement('li');
-        item.textContent = msg;
+        item.textContent = `${nickname}: ${msg}`;
         item.className = "messages__item";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
@@ -45,6 +60,7 @@
 
       socket.on('session in', showInfo);
       socket.on('session out', showInfo);
+      socket.on('nickname', showInfo);
     </script>
   </body>
 </html>

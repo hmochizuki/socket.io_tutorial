@@ -5,6 +5,35 @@ body {
     Arial, sans-serif;
 }
 
+input {
+  border: none;
+  border-radius: 2rem;
+}
+
+button {
+  background: #333;
+  border: none;
+  border-radius: 3px;
+  outline: none;
+  color: #fff;
+}
+
+#header {
+  height: 2rem;
+  background-color: rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+}
+.nickname-title {
+  margin-left: 1rem;
+}
+.nickname-form {
+  margin-left: 0.5rem;
+}
+.nickname-form__button {
+  margin-left: 0.5rem;
+}
+
 .info {
   list-style-type: none;
   position: fixed;
@@ -14,6 +43,7 @@ body {
 }
 .info__item {
   font-size: 14px;
+  text-align: right;
 }
 
 .messages {
@@ -41,21 +71,14 @@ body {
   backdrop-filter: blur(10px);
 }
 .message-form__input {
-  border: none;
   padding: 0 1rem;
   flex-grow: 1;
-  border-radius: 2rem;
   margin: 0.25rem;
 }
 .message-form__input:focus {
   outline: none;
 }
 .message-form__button {
-  background: #333;
-  border: none;
   padding: 0 1rem;
   margin: 0.25rem;
-  border-radius: 3px;
-  outline: none;
-  color: #fff;
 }

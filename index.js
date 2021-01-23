@@ -19,12 +19,16 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   io.emit('session in', '新しいユーザーが参加しました');
 
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
+  socket.on('chat message', ({ msg, nickname }) => {
+    io.emit('chat message', { msg, nickname });
   });
 
   socket.on('disconnect', () => {
     io.emit('session out', 'ユーザーが離脱しました');
+  });
+
+  socket.on('nickname', (nickname) => {
+    socket.emit('nickname', `ニックネームが${nickname}に設定されました`);
   });
 });
 
