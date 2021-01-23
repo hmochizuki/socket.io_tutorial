@@ -5,6 +5,7 @@
     <title>Socket.IO chat</title>
   </head>
   <body>
+    <ul id="info" class="info"></ul>
     <ul id="messages" class="messages"></ul>
     <form id="message-form" class="message-form" action="">
       <input id="message-form__input" class="message-form__input" autocomplete="off" /><button class="message-form__button" >Send</button>
@@ -14,6 +15,7 @@
       var socket = io();
       var messageForm = document.getElementById('message-form');
       var input = document.getElementById('message-form__input');
+      var info = document.getElementById('info');
 
       messageForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -24,11 +26,22 @@
       });
 
       socket.on('chat message', function(msg) {
-        var item = document.createElement('li', {});
+        var item = document.createElement('li');
         item.textContent = msg;
+        item.className = "messages__item";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
+
+      function showInfo (msg) {
+        var item = document.createElement('li');
+        item.className = "info__item";
+        item.textContent = msg;
+        info.appendChild(item);
+      }
+
+      socket.on('session in', showInfo);
+      socket.on('session out', showInfo);
     </script>
   </body>
 </html>

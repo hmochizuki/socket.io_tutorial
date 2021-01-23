@@ -17,14 +17,15 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  io.emit('session in', '新しいユーザーが参加しました');
 
   socket.on('chat message', (msg) => {
     io.emit('chat message', msg);
   });
 
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    io.emit('session out', 'ユーザーが離脱しました');
+    console.log('!!!!!!!!!!!!!!!!!!!');
   });
 });
 

@@ -5,15 +5,26 @@ body {
     Arial, sans-serif;
 }
 
+.info {
+  list-style-type: none;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  margin: 0;
+}
+.info__item {
+  font-size: 14px;
+}
+
 .messages {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
-.messages > li {
+.messages__item {
   padding: 0.5rem 1rem;
 }
-.messages > li:nth-child(odd) {
+.messages__item:nth-child(odd) {
   background: #efefef;
 }
 
