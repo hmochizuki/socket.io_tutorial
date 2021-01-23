@@ -36,14 +36,26 @@
       var nicknameInput = document.getElementById("nickname-form__input");
       var info = document.getElementById("info");
 
+      function addMessage({ msg, nickname }) {
+        var item = document.createElement("li");
+        const name = nickname || "anonymous";
+        item.textContent = `${nickname}: ${msg}`;
+        item.className = "messages__item";
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      }
+
       messageForm.addEventListener("submit", function (e) {
         e.preventDefault();
         if (messageInput.value) {
+          var msg = messageInput.value;
+          var nickname = nicknameInput.value;
           socket.emit("chat message", {
-            msg: messageInput.value,
-            nickname: nicknameInput.value,
+            msg,
+            nickname,
           });
           messageInput.value = "";
+          addMessage({ msg, nickname });
         }
       });
 
@@ -54,13 +66,7 @@
         }
       });
 
-      socket.on("chat message", function ({ msg, nickname }) {
-        var item = document.createElement("li");
-        item.textContent = `${nickname}: ${msg}`;
-        item.className = "messages__item";
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      });
+      socket.on("chat message", addMessage);
 
       function showInfo(msg) {
         var item = document.createElement("li");

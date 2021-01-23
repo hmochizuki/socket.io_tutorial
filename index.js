@@ -20,7 +20,7 @@ io.on('connection', (socket) => {
   io.emit('session in', '新しいユーザーが参加しました');
 
   socket.on('chat message', ({ msg, nickname }) => {
-    io.emit('chat message', { msg, nickname });
+    socket.broadcast.emit('chat message', { msg, nickname });
   });
 
   socket.on('disconnect', () => {
