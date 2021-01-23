@@ -30,6 +30,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io();
+
       var messageForm = document.getElementById("message-form");
       var messageInput = document.getElementById("message-form__input");
       var nicknameForm = document.getElementById("nickname-form");
@@ -50,13 +51,14 @@
         if (messageInput.value) {
           var msg = messageInput.value;
           var nickname = nicknameInput.value;
-          socket.emit("chat message", {
-            msg,
-            nickname,
-          });
+          socket.emit("chat message", { msg, nickname });
           messageInput.value = "";
           addMessage({ msg, nickname });
         }
+      });
+
+      messageInput.addEventListener("input", function () {
+        socket.emit("typing", nicknameInput.value);
       });
 
       nicknameForm.addEventListener("submit", function (e) {
@@ -77,10 +79,7 @@
           info.removeChild(item);
         }, 5000);
       }
-
-      socket.on("session in", showInfo);
-      socket.on("session out", showInfo);
-      socket.on("nickname", showInfo);
+      socket.on("info", showInfo);
     </script>
   </body>
 </html>
