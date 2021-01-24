@@ -5,18 +5,23 @@
     <title>Socket.IO chat</title>
   </head>
   <body>
-    <header id="header">
-      <p class="nickname-title">nickname:</p>
-      <form id="nickname-form" class="nickname-form">
-        <input
-          id="nickname-form__input"
-          class="nickname-form__input"
-          autocomplete="off"
-          placeholder="anonymous"
-          maxlength="15"
-          minlength="1"
-        /><button class="nickname-form__button">Send</button>
+    <dialog id="nickname-doalog">
+      <form id="nickname-form" method="doalog">
+        <p>Your nickname:
+          <input
+            id="nickname-form__input"
+            class="nickname-form__input"
+            autocomplete="off"
+            placeholder="anonymous"
+            maxlength="15"
+            minlength="1"
+          />
+        </p>
+        <button id="nickname-form__button" class="nickname-form__button">Send</button>
       </form>
+    </dialog>
+    <header id="header">
+      <p id="header__nickname" class="header__nickname">anonymous</p>
     </header>
     <ul id="info" class="info"></ul>
     <ul id="messages" class="messages"></ul>
@@ -35,7 +40,12 @@
       var messageInput = document.getElementById("message-form__input");
       var nicknameForm = document.getElementById("nickname-form");
       var nicknameInput = document.getElementById("nickname-form__input");
+      var headerNickname = document.getElementById("header__nickname")
       var info = document.getElementById("info");
+      var nicknameDialog = document.getElementById('nickname-doalog');
+      if (typeof nicknameDialog.showModal === "function") {
+        nicknameDialog.showModal();
+      }
 
       function addMessage({ msg, nickname }) {
         var item = document.createElement("li");
@@ -63,6 +73,8 @@
 
       nicknameForm.addEventListener("submit", function (e) {
         e.preventDefault();
+        nicknameDialog.close();
+        headerNickname.textContent = nicknameInput.value
         if (nicknameInput.value) {
           socket.emit("nickname", nicknameInput.value);
         }

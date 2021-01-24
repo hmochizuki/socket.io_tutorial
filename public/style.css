@@ -24,14 +24,12 @@ button {
   display: flex;
   align-items: center;
 }
-.nickname-title {
+.header__nickname {
   margin-left: 1rem;
 }
-.nickname-form {
-  margin-left: 0.5rem;
-}
 .nickname-form__button {
-  margin-left: 0.5rem;
+  display: block;
+  margin: 0 0 0 auto;
 }
 
 .info {
