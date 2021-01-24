@@ -69,17 +69,17 @@ nav {
   text-overflow: ellipsis;
 }
 
-.nav__message-to {
+.nav__room {
   padding: 0 10px;
   margin-bottom: 1rem;
 }
-.nav__message-to--label {
+.nav__room--label {
   font-size: 1rem;
   padding: 0;
   margin: 0;
   font-weight: bold;
 }
-.nav__message-to--select {
+.nav__room--select {
   width: 100%;
 }
 
