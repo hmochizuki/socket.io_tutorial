@@ -64,20 +64,11 @@
       const nicknameInput = document.getElementById("nickname-form__input");
       const headerNickname = document.getElementById("header__nickname");
       const info = document.getElementById("info__list");
+      const roomSelect = document.getElementById("nav__room--select")
       const nicknameDialog = document.getElementById("nickname-doalog");
       if (typeof nicknameDialog.showModal === "function") {
         nicknameDialog.showModal();
       }
-      const roomSelect = document.getElementById("nav__room--select")
-
-      const addMessage = ({ msg, nickname, private }) => {
-        const messages = document.getElementById("messages__list")
-        const item = document.createElement("li");
-        const name = nickname || "anonymous";
-        item.textContent = `${nickname}${private ? "(private)": ""}: ${msg}`;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      };
 
       messageForm.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -98,46 +89,21 @@
 
       nicknameForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        headerNickname.textContent = nicknameInput.value;
-        if (nicknameInput.value) {
-          nicknameDialog.close();
-          socket.emit("nickname", nicknameInput.value);
-          socket.emit("join", nicknameInput.value);
-        }
+        setNickname(nicknameInput.value)
       });
 
       socket.on("chat message", addMessage);
 
       socket.on("users", (users) => {
-        const userList = document.getElementById("nav__users--list");
-        const select = document.getElementById("nav__room--select");
         users.forEach((user) => {
           if(user.id === socket.id) return
-          const userItem = document.createElement("li");
-          userItem.textContent = user.nickname;
-          userItem.id = `nav__users--item-${user.id}`;
-          userList.appendChild(userItem);
-
-          const option = document.createElement("option")
-          option.id = `nav__room--select-${user.id}`
-          option.value = user.id
-          option.textContent = user.nickname
-          select.appendChild(option)
+          addUserList(user)
+          addRoomOption(user)
         });
       });
       socket.on("join", (user) => {
-        const userList = document.getElementById("nav__users--list");
-        const item = document.createElement("li");
-        item.textContent = user.nickname;
-        item.id = `nav__users--item-${user.id}`;
-        userList.appendChild(item);
-
-        const select = document.getElementById("nav__room--select");
-        const option = document.createElement("option")
-        option.id = `nav__room--select-${user.id}`
-        option.value = user.id
-        option.textContent = user.nickname
-        select.appendChild(option)
+        addUserList(user)
+        addRoomOption(user)
       });
       socket.on("leave", (user) => {
         const item = document.getElementById(`nav__users--item-${user.id}`);
@@ -170,6 +136,38 @@
         }
       }()
       socket.on("typing", onTyping);
+
+      function addUserList(user) {
+        const userList = document.getElementById("nav__users--list");
+        const item = document.createElement("li");
+        item.textContent = user.nickname;
+        item.id = `nav__users--item-${user.id}`;
+        userList.appendChild(item);
+      }
+
+      function addRoomOption(user) {
+        const option = document.createElement("option")
+        option.id = `nav__room--select-${user.id}`
+        option.value = user.id
+        option.textContent = user.nickname
+        roomSelect.appendChild(option)
+      }
+
+      function setNickname (nickname) {
+        headerNickname.textContent = nickname;
+        nicknameDialog.close();
+        socket.emit("nickname", nickname);
+        socket.emit("join", nickname);
+      }
+
+      function addMessage ({ msg, nickname, private }) {
+        const messages = document.getElementById("messages__list")
+        const item = document.createElement("li");
+        const name = nickname || "anonymous";
+        item.textContent = `${nickname}${private ? "(private)": ""}: ${msg}`;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      };
 
       function createTypingMessage (users) {
         if(users.length) return `${users.map((u) => u.nickname).join(", ")} is typing...`
