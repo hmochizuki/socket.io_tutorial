@@ -34,21 +34,21 @@
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var socket = io();
+      const socket = io();
 
-      var messageForm = document.getElementById("message-form");
-      var messageInput = document.getElementById("message-form__input");
-      var nicknameForm = document.getElementById("nickname-form");
-      var nicknameInput = document.getElementById("nickname-form__input");
-      var headerNickname = document.getElementById("header__nickname")
-      var info = document.getElementById("info");
-      var nicknameDialog = document.getElementById('nickname-doalog');
+      const messageForm = document.getElementById("message-form");
+      const messageInput = document.getElementById("message-form__input");
+      const nicknameForm = document.getElementById("nickname-form");
+      const nicknameInput = document.getElementById("nickname-form__input");
+      const headerNickname = document.getElementById("header__nickname")
+      const info = document.getElementById("info");
+      const nicknameDialog = document.getElementById('nickname-doalog');
       if (typeof nicknameDialog.showModal === "function") {
         nicknameDialog.showModal();
       }
 
-      function addMessage({ msg, nickname }) {
-        var item = document.createElement("li");
+      const addMessage = ({ msg, nickname }) => {
+        const item = document.createElement("li");
         const name = nickname || "anonymous";
         item.textContent = `${nickname}: ${msg}`;
         item.className = "messages__item";
@@ -59,8 +59,8 @@
       messageForm.addEventListener("submit", function (e) {
         e.preventDefault();
         if (messageInput.value) {
-          var msg = messageInput.value;
-          var nickname = nicknameInput.value;
+          const msg = messageInput.value;
+          const nickname = nicknameInput.value;
           socket.emit("chat message", { msg, nickname });
           messageInput.value = "";
           addMessage({ msg, nickname });
@@ -82,8 +82,8 @@
 
       socket.on("chat message", addMessage);
 
-      function showInfo(msg) {
-        var item = document.createElement("li");
+      const showInfo = (msg) => {
+        const item = document.createElement("li");
         item.className = "info__item";
         item.textContent = msg;
         info.appendChild(item);
