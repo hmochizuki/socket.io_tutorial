@@ -1,194 +1,188 @@
 <!DOCTYPE html>
 <html>
-  <link rel="stylesheet" type="text/css" href="style.css" />
-  <head>
-    <title>Socket.IO chat</title>
-  </head>
-  <body>
-    <header id="header">
-      <span id="header__nickname" class="header__nickname">anonymous</span>
-    </header>
-    <nav id="nav">
-      <section id="nav__users" class="nav__users">
-        <h6 id="nav__users--title" class="nav__users--title">Logined Users</h3>
+<link rel="stylesheet" type="text/css" href="style.css" />
+
+<head>
+  <title>Socket.IO chat</title>
+</head>
+
+<body>
+  <header id="header">
+    <span id="header__nickname" class="header__nickname">anonymous</span>
+  </header>
+  <nav id="nav">
+    <section id="nav__users" class="nav__users">
+      <h6 id="nav__users--title" class="nav__users--title">Logined Users</h3>
         <ui id="nav__users--list" class="nav__users--list"></ui>
-      </section>
-      <section id="nav__room" class="nav__room">
-        <label for="nav__room--select" class="nav__room--label">Message to</label>
-        <select id="nav__room--select" class="nav__room--select">
-          <option id="nav__room--select-general" value="general">general</option>
-        </select>
-      </section>
-    </nav>
-    <main>
-      <dialog id="nickname-doalog">
-        <form id="nickname-form" method="doalog">
-          <p>
-            Your nickname:
-            <input
-              id="nickname-form__input"
-              class="nickname-form__input"
-              autocomplete="off"
-              placeholder="anonymous"
-              maxlength="15"
-              minlength="1"
-            />
-          </p>
-          <button id="nickname-form__button" class="nickname-form__button">
-            Send
-          </button>
-        </form>
-      </dialog>
-      <section id="info">
-        <ul id="info__list" class="info__list"></ul>
-      </section>
-      <section id="messages">
-        <ul id="messages__list" class="messages__list"></ul>
-        <form id="message-form" class="message-form" action="">
-          <span id="typing" class="typing"></span>
-          <input
-            id="message-form__input"
-            class="message-form__input"
-            autocomplete="off"
-          /><button class="message-form__button">Send</button>
-        </form>
-      </section>
-    </main>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      const socket = io();
+    </section>
+    <section id="nav__room" class="nav__room">
+      <label for="nav__room--select" class="nav__room--label">Message to</label>
+      <select id="nav__room--select" class="nav__room--select">
+        <option id="nav__room--select-general" value="general">general</option>
+      </select>
+    </section>
+  </nav>
+  <main>
+    <dialog id="nickname-doalog">
+      <form id="nickname-form" method="doalog">
+        <p>
+          Your nickname:
+          <input id="nickname-form__input" class="nickname-form__input" autocomplete="off" placeholder="anonymous"
+            maxlength="15" minlength="1" />
+        </p>
+        <button id="nickname-form__button" class="nickname-form__button">
+          Send
+        </button>
+      </form>
+    </dialog>
+    <section id="info">
+      <ul id="info__list" class="info__list"></ul>
+    </section>
+    <section id="messages">
+      <ul id="messages__list" class="messages__list"></ul>
+      <form id="message-form" class="message-form" action="">
+        <span id="typing" class="typing"></span>
+        <input id="message-form__input" class="message-form__input" autocomplete="off" /><button
+          class="message-form__button">Send</button>
+      </form>
+    </section>
+  </main>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
 
-      const nicknameDialog = document.getElementById("nickname-doalog");
-      if (typeof nicknameDialog.showModal === "function") {
-        nicknameDialog.showModal();
+    const nicknameDialog = document.getElementById("nickname-doalog");
+    if (typeof nicknameDialog.showModal === "function") {
+      nicknameDialog.showModal();
+    }
+
+    const messageInput = document.getElementById("message-form__input");
+    messageInput.addEventListener(
+      "input",
+      throttle(() => socket.emit("typing", getNickname()), 5000)
+    );
+    const messageForm = document.getElementById("message-form");
+    messageForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (messageInput.value) {
+        const msg = messageInput.value;
+        const nickname = getNickname();
+        const room = getSelectedRoom();
+        socket.emit("chat message", { msg, nickname, room });
+        messageInput.value = "";
+        addMessage({ msg, nickname, private: room !== "general" });
       }
+    });
 
-      const messageInput = document.getElementById("message-form__input");
-      messageInput.addEventListener(
-        "input",
-        throttle(() => socket.emit("typing", getNickname()), 5000)
-        );
-      const messageForm = document.getElementById("message-form");
-      messageForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        if (messageInput.value) {
-          const msg = messageInput.value;
-          const nickname = getNickname();
-          const room = getSelectedRoom();
-          socket.emit("chat message", { msg, nickname, room });
-          messageInput.value = "";
-          addMessage({ msg, nickname, private: room !== "general" });
-        }
-      });
+    const nicknameForm = document.getElementById("nickname-form");
+    nicknameForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      setNickname(getNickname())
+    });
 
-      const nicknameForm = document.getElementById("nickname-form");
-      nicknameForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        setNickname(getNickname())
-      });
+    socket.on("chat message", addMessage);
 
-      socket.on("chat message", addMessage);
-
-      socket.on("users", (users) => {
-        users.forEach((user) => {
-          if(user.id === socket.id) return
-          addUserList(user)
-          addRoomOption(user)
-        });
-      });
-      socket.on("join", (user) => {
+    socket.on("users", (users) => {
+      users.forEach((user) => {
+        if (user.id === socket.id) return
         addUserList(user)
         addRoomOption(user)
       });
-      socket.on("leave", (user) => {
-        const item = document.getElementById(`nav__users--item-${user.id}`);
-        item.remove();
+    });
+    socket.on("join", (user) => {
+      addUserList(user)
+      addRoomOption(user)
+    });
+    socket.on("leave", (user) => {
+      const item = document.getElementById(`nav__users--item-${user.id}`);
+      item.remove();
 
-        const option = document.getElementById(`nav__room--select-${user.id}`)
-        option.remove()
-      });
+      const option = document.getElementById(`nav__room--select-${user.id}`)
+      option.remove()
+    });
 
-      const showInfo = (msg) => {
-        const info = document.getElementById("info__list");
-        const item = document.createElement("li");
-        item.textContent = msg;
-        info.appendChild(item);
-        setTimeout(() => {
-          info.removeChild(item);
-        }, 5000);
-      };
-      socket.on("info", showInfo);
+    const showInfo = (msg) => {
+      const info = document.getElementById("info__list");
+      const item = document.createElement("li");
+      item.textContent = msg;
+      info.appendChild(item);
+      setTimeout(() => {
+        info.removeChild(item);
+      }, 5000);
+    };
+    socket.on("info", showInfo);
 
-      const onTyping = function () {
-        let typingUsers = []
-        return (user) => {
-          const element = document.getElementById("typing");
-          typingUsers.push(user),
+    const onTyping = function () {
+      let typingUsers = []
+      return (user) => {
+        const element = document.getElementById("typing");
+        typingUsers.push(user),
           setTimeout(() => {
             typingUsers.pop()
             element.textContent = createTypingMessage(typingUsers)
           }, 5000)
-          element.textContent = createTypingMessage(typingUsers)
+        element.textContent = createTypingMessage(typingUsers)
+      }
+    }()
+    socket.on("typing", onTyping);
+
+    function addUserList(user) {
+      const userList = document.getElementById("nav__users--list");
+      const item = document.createElement("li");
+      item.textContent = user.nickname;
+      item.id = `nav__users--item-${user.id}`;
+      userList.appendChild(item);
+    }
+
+    function addRoomOption(user) {
+      const roomSelect = document.getElementById("nav__room--select")
+      const option = document.createElement("option")
+      option.id = `nav__room--select-${user.id}`
+      option.value = user.id
+      option.textContent = user.nickname
+      roomSelect.appendChild(option)
+    }
+
+    function getNickname() {
+      return document.getElementById("nickname-form__input").value;
+    }
+    function setNickname(nickname) {
+      const headerNickname = document.getElementById("header__nickname");
+      headerNickname.textContent = nickname;
+      nicknameDialog.close();
+      socket.emit("nickname", nickname);
+      socket.emit("join", nickname);
+    }
+
+    function addMessage({ msg, nickname, private }) {
+      const messages = document.getElementById("messages__list")
+      const item = document.createElement("li");
+      const name = nickname || "anonymous";
+      item.textContent = `${nickname}${private ? "(private)" : ""}: ${msg}`;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    };
+
+    function createTypingMessage(users) {
+      if (users.length) return `${users.map((u) => u.nickname).join(", ")} is typing...`
+      return ""
+    }
+
+    function getSelectedRoom() {
+      return document.getElementById("nav__room--select").value
+    }
+
+    function throttle(cb, interval) {
+      let pre = new Date();
+      return () => {
+        const now = new Date();
+        if (now - pre > interval) {
+          cb();
+          pre = now;
         }
-      }()
-      socket.on("typing", onTyping);
-
-      function addUserList(user) {
-        const userList = document.getElementById("nav__users--list");
-        const item = document.createElement("li");
-        item.textContent = user.nickname;
-        item.id = `nav__users--item-${user.id}`;
-        userList.appendChild(item);
-      }
-
-      function addRoomOption(user) {
-        const roomSelect = document.getElementById("nav__room--select")
-        const option = document.createElement("option")
-        option.id = `nav__room--select-${user.id}`
-        option.value = user.id
-        option.textContent = user.nickname
-        roomSelect.appendChild(option)
-      }
-
-      function getNickname () {
-        return document.getElementById("nickname-form__input").value;
-      }
-      function setNickname (nickname) {
-        const headerNickname = document.getElementById("header__nickname");
-        headerNickname.textContent = nickname;
-        nicknameDialog.close();
-        socket.emit("nickname", nickname);
-        socket.emit("join", nickname);
-      }
-
-      function addMessage ({ msg, nickname, private }) {
-        const messages = document.getElementById("messages__list")
-        const item = document.createElement("li");
-        const name = nickname || "anonymous";
-        item.textContent = `${nickname}${private ? "(private)": ""}: ${msg}`;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
       };
+    }
+  </script>
+</body>
 
-      function createTypingMessage (users) {
-        if(users.length) return `${users.map((u) => u.nickname).join(", ")} is typing...`
-        return ""
-      }
-
-      function getSelectedRoom () {
-        return document.getElementById("nav__room--select").value
-      }
-
-      function throttle(cb, interval) {
-        let pre = new Date();
-        return () => {
-          const now = new Date();
-          if (now - pre > interval) {
-            cb();
-            pre = now;
-          }
-        };
-      }
-    </script>
-  </body>
 </html>
