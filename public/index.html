@@ -70,11 +70,11 @@
       }
       const roomSelect = document.getElementById("nav__room--select")
 
-      const addMessage = ({ msg, nickname }) => {
+      const addMessage = ({ msg, nickname, private }) => {
         const messages = document.getElementById("messages__list")
         const item = document.createElement("li");
         const name = nickname || "anonymous";
-        item.textContent = `${nickname}: ${msg}`;
+        item.textContent = `${nickname}${private ? "(private)": ""}: ${msg}`;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       };
@@ -87,7 +87,7 @@
           const room = roomSelect.value;
           socket.emit("chat message", { msg, nickname, room });
           messageInput.value = "";
-          addMessage({ msg, nickname });
+          addMessage({ msg, nickname, private: room !== "general" });
         }
       });
 

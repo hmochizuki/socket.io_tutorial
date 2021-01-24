@@ -21,8 +21,8 @@ const users = [];
 io.on('connection', (socket) => {
   socket.on('chat message', ({ msg, nickname, room }) => {
     if (room === 'general')
-      socket.broadcast.emit('chat message', { msg, nickname });
-    else socket.to(room).emit('chat message', { msg, nickname });
+      socket.broadcast.emit('chat message', { msg, nickname, private: false });
+    else socket.to(room).emit('chat message', { msg, nickname, private: true });
   });
 
   socket.on('typing', () => {
