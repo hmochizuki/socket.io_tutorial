@@ -25,8 +25,6 @@ io.on('connection', (socket) => {
 
   socket.on('typing', () => {
     const user = users.find(({ id }) => id === socket.id);
-    console.log({ user });
-    console.log({ users });
     if (user) socket.broadcast.emit('typing', user);
   });
 
