@@ -21,12 +21,13 @@ const users = [];
 io.on('connection', (socket) => {
   socket.on('chat message', ({ msg, nickname }) => {
     socket.broadcast.emit('chat message', { msg, nickname });
-    users.push({ id: socket.id, nickname: 'anonymous' });
   });
 
-  socket.on('typing', (nickname) => {
-    const name = nickname || 'anonymous';
-    socket.broadcast.emit('info', `${name} is typing...`);
+  socket.on('typing', () => {
+    const user = users.find(({ id }) => id === socket.id);
+    console.log({ user });
+    console.log({ users });
+    if (user) socket.broadcast.emit('typing', user);
   });
 
   socket.on('disconnect', () => {
@@ -47,8 +48,7 @@ io.on('connection', (socket) => {
       id: socket.id,
       nickname,
     };
-    const index = users.findIndex((u) => u.id === user.id);
-    users[index] = user;
+    users.push(user);
     socket.broadcast.emit('info', `${nickname}が参加しました`);
     socket.emit('users', users);
     socket.broadcast.emit('join', user);

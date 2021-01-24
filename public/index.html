@@ -38,6 +38,7 @@
       </section>
       <ul id="messages" class="messages"></ul>
       <form id="message-form" class="message-form" action="">
+        <span id="typing" class="typing"></span>
         <input
           id="message-form__input"
           class="message-form__input"
@@ -127,6 +128,25 @@
         }, 5000);
       };
       socket.on("info", showInfo);
+
+      const onTyping = function () {
+        let typingUsers = []
+        return (user) => {
+          const element = document.getElementById("typing");
+          typingUsers.push(user),
+          setTimeout(() => {
+            typingUsers.pop()
+            element.textContent = createTypingMessage(typingUsers)
+          }, 5000)
+          element.textContent = createTypingMessage(typingUsers)
+        }
+      }()
+      socket.on("typing", onTyping);
+
+      function createTypingMessage (users) {
+        if(users.length) return `${users.map((u) => u.nickname).join(", ")} is typing...`
+        return ""
+      }
 
       function throttle(cb, interval) {
         let pre = new Date();
