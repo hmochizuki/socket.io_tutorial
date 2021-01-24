@@ -29,9 +29,12 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    users.filter((user) => user !== socket.id);
+    const index = users.findIndex((u) => u.id === socket.id);
     io.emit('leave', socket.id);
-    io.emit('info', 'ユーザーが離脱しました');
+    if (users[index]) {
+      io.emit('info', `${users[index].nickname}が離脱しました`);
+      users.splice(index, 1);
+    }
   });
 
   socket.on('nickname', (nickname) => {

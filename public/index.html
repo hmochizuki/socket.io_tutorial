@@ -111,8 +111,8 @@
         item.id = `nav__users--item-${user.id}`;
         userList.appendChild(item);
       });
-      socket.on("leave", (id) => {
-        const item = document.getElementById(`nav__users--item-${id}`);
+      socket.on("leave", (user) => {
+        const item = document.getElementById(`nav__users--item-${user.id}`);
         item.remove();
       });
 
