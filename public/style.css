@@ -20,14 +20,19 @@ button {
 
 main {
   position: relative;
-  left: 4rem;
+  left: 7rem;
 }
 
 header {
-  height: 2rem;
   background-color: rgba(0, 0, 0, 0.15);
   display: flex;
+  position: relative;
+  top: 0;
+  left: 7rem;
+  width: 100%;
   align-items: center;
+  border-bottom: solid 1px black;
+  height: 2rem;
 }
 .header__nickname {
   margin-left: 1rem;
@@ -39,10 +44,14 @@ header {
 
 nav {
   position: fixed;
+  top:0;
   left: 0;
   height: 100%;
-  width: 4rem;
+  width: 7rem;
   background-color: bisque;
+}
+.nav__users {
+  padding: 0 10px;
 }
 .nav__users--title {
   font-size: 1rem;
@@ -66,15 +75,15 @@ nav {
   text-align: right;
 }
 
-.messages {
+.messages__list {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
-.messages__item {
+.messages__list > li {
   padding: 0.5rem 1rem;
 }
-.messages__item:nth-child(odd) {
+.messages__list > li:nth-child(odd) {
   background: #efefef;
 }
 
@@ -83,7 +92,7 @@ nav {
   padding: 0.25rem;
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 7rem;
   right: 0;
   display: flex;
   height: 3rem;

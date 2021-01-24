@@ -9,7 +9,7 @@
       <span id="header__nickname" class="header__nickname">anonymous</span>
     </header>
     <nav id="nav">
-      <section id="nav__users">
+      <section id="nav__users" class="nav__users">
         <h3 id="nav__users--title" class="nav__users--title">Logined Users</h3>
         <ui id="nav__users--list" class="nav__users--list"></ui>
       </section>
@@ -36,15 +36,17 @@
       <section id="info">
         <ul id="info__list" class="info__list"></ul>
       </section>
-      <ul id="messages" class="messages"></ul>
-      <form id="message-form" class="message-form" action="">
-        <span id="typing" class="typing"></span>
-        <input
-          id="message-form__input"
-          class="message-form__input"
-          autocomplete="off"
-        /><button class="message-form__button">Send</button>
-      </form>
+      <section id="messages">
+        <ul id="messages__list" class="messages__list"></ul>
+        <form id="message-form" class="message-form" action="">
+          <span id="typing" class="typing"></span>
+          <input
+            id="message-form__input"
+            class="message-form__input"
+            autocomplete="off"
+          /><button class="message-form__button">Send</button>
+        </form>
+      </section>
     </main>
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -62,10 +64,10 @@
       }
 
       const addMessage = ({ msg, nickname }) => {
+        const messages = document.getElementById("messages__list")
         const item = document.createElement("li");
         const name = nickname || "anonymous";
         item.textContent = `${nickname}: ${msg}`;
-        item.className = "messages__item";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       };
@@ -101,6 +103,7 @@
       socket.on("users", (users) => {
         const userList = document.getElementById("nav__users--list");
         users.forEach((user) => {
+          if(user.id === socket.id) return
           const item = document.createElement("li");
           item.textContent = user.nickname;
           item.id = `nav__users--item-${user.id}`;
