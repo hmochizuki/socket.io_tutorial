@@ -58,38 +58,33 @@
     <script>
       const socket = io();
 
-      const messageForm = document.getElementById("message-form");
-      const messageInput = document.getElementById("message-form__input");
-      const nicknameForm = document.getElementById("nickname-form");
-      const nicknameInput = document.getElementById("nickname-form__input");
-      const headerNickname = document.getElementById("header__nickname");
-      const info = document.getElementById("info__list");
-      const roomSelect = document.getElementById("nav__room--select")
       const nicknameDialog = document.getElementById("nickname-doalog");
       if (typeof nicknameDialog.showModal === "function") {
         nicknameDialog.showModal();
       }
 
+      const messageInput = document.getElementById("message-form__input");
+      messageInput.addEventListener(
+        "input",
+        throttle(() => socket.emit("typing", getNickname()), 5000)
+        );
+      const messageForm = document.getElementById("message-form");
       messageForm.addEventListener("submit", function (e) {
         e.preventDefault();
         if (messageInput.value) {
           const msg = messageInput.value;
-          const nickname = nicknameInput.value;
-          const room = roomSelect.value;
+          const nickname = getNickname();
+          const room = getSelectedRoom();
           socket.emit("chat message", { msg, nickname, room });
           messageInput.value = "";
           addMessage({ msg, nickname, private: room !== "general" });
         }
       });
 
-      messageInput.addEventListener(
-        "input",
-        throttle(() => socket.emit("typing", nicknameInput.value), 5000)
-      );
-
+      const nicknameForm = document.getElementById("nickname-form");
       nicknameForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        setNickname(nicknameInput.value)
+        setNickname(getNickname())
       });
 
       socket.on("chat message", addMessage);
@@ -114,6 +109,7 @@
       });
 
       const showInfo = (msg) => {
+        const info = document.getElementById("info__list");
         const item = document.createElement("li");
         item.textContent = msg;
         info.appendChild(item);
@@ -146,6 +142,7 @@
       }
 
       function addRoomOption(user) {
+        const roomSelect = document.getElementById("nav__room--select")
         const option = document.createElement("option")
         option.id = `nav__room--select-${user.id}`
         option.value = user.id
@@ -153,7 +150,11 @@
         roomSelect.appendChild(option)
       }
 
+      function getNickname () {
+        return document.getElementById("nickname-form__input").value;
+      }
       function setNickname (nickname) {
+        const headerNickname = document.getElementById("header__nickname");
         headerNickname.textContent = nickname;
         nicknameDialog.close();
         socket.emit("nickname", nickname);
@@ -172,6 +173,10 @@
       function createTypingMessage (users) {
         if(users.length) return `${users.map((u) => u.nickname).join(", ")} is typing...`
         return ""
+      }
+
+      function getSelectedRoom () {
+        return document.getElementById("nav__room--select").value
       }
 
       function throttle(cb, interval) {
