@@ -7,7 +7,8 @@
   <body>
     <dialog id="nickname-doalog">
       <form id="nickname-form" method="doalog">
-        <p>Your nickname:
+        <p>
+          Your nickname:
           <input
             id="nickname-form__input"
             class="nickname-form__input"
@@ -17,7 +18,9 @@
             minlength="1"
           />
         </p>
-        <button id="nickname-form__button" class="nickname-form__button">Send</button>
+        <button id="nickname-form__button" class="nickname-form__button">
+          Send
+        </button>
       </form>
     </dialog>
     <header id="header">
@@ -40,9 +43,9 @@
       const messageInput = document.getElementById("message-form__input");
       const nicknameForm = document.getElementById("nickname-form");
       const nicknameInput = document.getElementById("nickname-form__input");
-      const headerNickname = document.getElementById("header__nickname")
+      const headerNickname = document.getElementById("header__nickname");
       const info = document.getElementById("info");
-      const nicknameDialog = document.getElementById('nickname-doalog');
+      const nicknameDialog = document.getElementById("nickname-doalog");
       if (typeof nicknameDialog.showModal === "function") {
         nicknameDialog.showModal();
       }
@@ -54,7 +57,7 @@
         item.className = "messages__item";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
-      }
+      };
 
       messageForm.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -67,14 +70,15 @@
         }
       });
 
-      messageInput.addEventListener("input", function () {
-        socket.emit("typing", nicknameInput.value);
-      });
+      messageInput.addEventListener(
+        "input",
+        throttle(() => socket.emit("typing", nicknameInput.value), 5000)
+      );
 
       nicknameForm.addEventListener("submit", function (e) {
         e.preventDefault();
         nicknameDialog.close();
-        headerNickname.textContent = nicknameInput.value
+        headerNickname.textContent = nicknameInput.value;
         if (nicknameInput.value) {
           socket.emit("nickname", nicknameInput.value);
         }
@@ -90,8 +94,19 @@
         setTimeout(() => {
           info.removeChild(item);
         }, 5000);
-      }
+      };
       socket.on("info", showInfo);
+
+      function throttle (cb, interval) {
+        let pre = new Date();
+        return () => {
+          const now = new Date();
+          if (now - pre > interval) {
+            cb();
+            pre = now;
+          }
+        };
+      };
     </script>
   </body>
 </html>
