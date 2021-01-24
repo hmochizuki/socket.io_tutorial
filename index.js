@@ -16,9 +16,9 @@ app.get('/', (req, res) => {
   res.send(content);
 });
 
-io.on('connection', (socket) => {
-  io.emit('info', '新しいユーザーが参加しました');
+const users = [];
 
+io.on('connection', (socket) => {
   socket.on('chat message', ({ msg, nickname }) => {
     socket.broadcast.emit('chat message', { msg, nickname });
   });
@@ -29,11 +29,24 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+    users.filter((user) => user !== socket.id);
+    io.emit('leave', socket.id);
     io.emit('info', 'ユーザーが離脱しました');
   });
 
   socket.on('nickname', (nickname) => {
     socket.emit('info', `ニックネームが${nickname}に設定されました`);
+  });
+
+  socket.on('join', (nickname) => {
+    const user = {
+      id: socket.id,
+      nickname,
+    };
+    users.push(user);
+    socket.broadcast.emit('info', `${nickname}が参加しました`);
+    socket.emit('users', users);
+    socket.broadcast.emit('join', user);
   });
 });
 
