@@ -7,11 +7,8 @@ This is an app that implements the [official socket.io tutorial]("https://socket
 :white_check_mark: can set your name as you like<br>
 :white_check_mark: can notice that someone has connected or disconnected<br>
 :white_check_mark: can notice that someone is typing...<br>
-
-## not implemented yet
-:soon: can see list of connected users<br>
-:soon: can enjoy private messaging<br>
-
+:white_check_mark: can see list of connected users<br>
+:white_check_mark: can enjoy private messaging<br>
 # Usage
 ## 1. Clone 
 Clone this project.
