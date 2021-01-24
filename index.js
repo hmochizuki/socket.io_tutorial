@@ -19,8 +19,10 @@ app.get('/', (req, res) => {
 const users = [];
 
 io.on('connection', (socket) => {
-  socket.on('chat message', ({ msg, nickname }) => {
-    socket.broadcast.emit('chat message', { msg, nickname });
+  socket.on('chat message', ({ msg, nickname, room }) => {
+    if (room === 'general')
+      socket.broadcast.emit('chat message', { msg, nickname });
+    else socket.to(room).emit('chat message', { msg, nickname });
   });
 
   socket.on('typing', () => {

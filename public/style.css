@@ -44,17 +44,21 @@ header {
 
 nav {
   position: fixed;
-  top:0;
+  top: 0;
   left: 0;
   height: 100%;
   width: 7rem;
   background-color: bisque;
+  padding: 2rem 0 0 0;
 }
-.nav__users {
+.nav__users  {
   padding: 0 10px;
+  margin-bottom: 1rem;
 }
 .nav__users--title {
   font-size: 1rem;
+  padding: 0;
+  margin: 0;
 }
 .nav__users--list {
   list-style-type: none;
@@ -63,6 +67,20 @@ nav {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.nav__message-to {
+  padding: 0 10px;
+  margin-bottom: 1rem;
+}
+.nav__message-to--label {
+  font-size: 1rem;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+}
+.nav__message-to--select {
+  width: 100%;
 }
 
 .info__list {

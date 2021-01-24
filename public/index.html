@@ -10,8 +10,14 @@
     </header>
     <nav id="nav">
       <section id="nav__users" class="nav__users">
-        <h3 id="nav__users--title" class="nav__users--title">Logined Users</h3>
+        <h6 id="nav__users--title" class="nav__users--title">Logined Users</h3>
         <ui id="nav__users--list" class="nav__users--list"></ui>
+      </section>
+      <section id="nav__room" class="nav__room">
+        <label for="nav__room--select" class="nav__room--label">Message to</label>
+        <select id="nav__room--select" class="nav__room--select">
+          <option id="nav__room--select-general" value="general">general</option>
+        </select>
       </section>
     </nav>
     <main>
@@ -62,6 +68,7 @@
       if (typeof nicknameDialog.showModal === "function") {
         nicknameDialog.showModal();
       }
+      const roomSelect = document.getElementById("nav__room--select")
 
       const addMessage = ({ msg, nickname }) => {
         const messages = document.getElementById("messages__list")
@@ -77,7 +84,8 @@
         if (messageInput.value) {
           const msg = messageInput.value;
           const nickname = nicknameInput.value;
-          socket.emit("chat message", { msg, nickname });
+          const room = roomSelect.value;
+          socket.emit("chat message", { msg, nickname, room });
           messageInput.value = "";
           addMessage({ msg, nickname });
         }
@@ -90,9 +98,9 @@
 
       nicknameForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        nicknameDialog.close();
         headerNickname.textContent = nicknameInput.value;
         if (nicknameInput.value) {
+          nicknameDialog.close();
           socket.emit("nickname", nicknameInput.value);
           socket.emit("join", nicknameInput.value);
         }
@@ -102,12 +110,19 @@
 
       socket.on("users", (users) => {
         const userList = document.getElementById("nav__users--list");
+        const select = document.getElementById("nav__room--select");
         users.forEach((user) => {
           if(user.id === socket.id) return
-          const item = document.createElement("li");
-          item.textContent = user.nickname;
-          item.id = `nav__users--item-${user.id}`;
-          userList.appendChild(item);
+          const userItem = document.createElement("li");
+          userItem.textContent = user.nickname;
+          userItem.id = `nav__users--item-${user.id}`;
+          userList.appendChild(userItem);
+
+          const option = document.createElement("option")
+          option.id = `nav__room--select-${user.id}`
+          option.value = user.id
+          option.textContent = user.nickname
+          select.appendChild(option)
         });
       });
       socket.on("join", (user) => {
@@ -116,10 +131,20 @@
         item.textContent = user.nickname;
         item.id = `nav__users--item-${user.id}`;
         userList.appendChild(item);
+
+        const select = document.getElementById("nav__room--select");
+        const option = document.createElement("option")
+        option.id = `nav__room--select-${user.id}`
+        option.value = user.id
+        option.textContent = user.nickname
+        select.appendChild(option)
       });
       socket.on("leave", (user) => {
         const item = document.getElementById(`nav__users--item-${user.id}`);
         item.remove();
+
+        const option = document.getElementById(`nav__room--select-${user.id}`)
+        option.remove()
       });
 
       const showInfo = (msg) => {
