@@ -5,24 +5,6 @@
     <title>Socket.IO chat</title>
   </head>
   <body>
-    <dialog id="nickname-doalog">
-      <form id="nickname-form" method="doalog">
-        <p>
-          Your nickname:
-          <input
-            id="nickname-form__input"
-            class="nickname-form__input"
-            autocomplete="off"
-            placeholder="anonymous"
-            maxlength="15"
-            minlength="1"
-          />
-        </p>
-        <button id="nickname-form__button" class="nickname-form__button">
-          Send
-        </button>
-      </form>
-    </dialog>
     <header id="header">
       <span id="header__nickname" class="header__nickname">anonymous</span>
     </header>
@@ -33,7 +15,27 @@
       </section>
     </nav>
     <main>
-      <ul id="info" class="info"></ul>
+      <dialog id="nickname-doalog">
+        <form id="nickname-form" method="doalog">
+          <p>
+            Your nickname:
+            <input
+              id="nickname-form__input"
+              class="nickname-form__input"
+              autocomplete="off"
+              placeholder="anonymous"
+              maxlength="15"
+              minlength="1"
+            />
+          </p>
+          <button id="nickname-form__button" class="nickname-form__button">
+            Send
+          </button>
+        </form>
+      </dialog>
+      <section id="info">
+        <ul id="info__list" class="info__list"></ul>
+      </section>
       <ul id="messages" class="messages"></ul>
       <form id="message-form" class="message-form" action="">
         <input
@@ -52,7 +54,7 @@
       const nicknameForm = document.getElementById("nickname-form");
       const nicknameInput = document.getElementById("nickname-form__input");
       const headerNickname = document.getElementById("header__nickname");
-      const info = document.getElementById("info");
+      const info = document.getElementById("info__list");
       const nicknameDialog = document.getElementById("nickname-doalog");
       if (typeof nicknameDialog.showModal === "function") {
         nicknameDialog.showModal();
@@ -118,7 +120,6 @@
 
       const showInfo = (msg) => {
         const item = document.createElement("li");
-        item.className = "info__item";
         item.textContent = msg;
         info.appendChild(item);
         setTimeout(() => {

@@ -52,18 +52,17 @@ nav {
 }
 .nav__users--list > li {
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.info {
+.info__list {
   list-style-type: none;
   position: fixed;
   top: 1rem;
   right: 1rem;
   margin: 0;
-}
-.info__item {
-  font-size: 14px;
+  font-size: 0.5rem;
   text-align: right;
 }
 
