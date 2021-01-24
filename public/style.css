@@ -47,6 +47,13 @@ nav {
 .nav__users--title {
   font-size: 1rem;
 }
+.nav__users--list {
+  list-style-type: none;
+}
+.nav__users--list > li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .info {
   list-style-type: none;
